@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class touchCharacterControllerScript : MonoBehaviour
 {
@@ -24,6 +25,11 @@ public class touchCharacterControllerScript : MonoBehaviour
     private Vector2 moveInput;
     private Vector3 moveDirection = Vector3.zero;
 
+    public GameObject jumpButton;
+    private Button interactButton;
+
+    private bool jumpButtonClicked = false;
+
     void Start()
     {
         leftFingerId = -1;
@@ -32,6 +38,9 @@ public class touchCharacterControllerScript : MonoBehaviour
         halfScreenWidth = Screen.width / 2;
 
         moveInputDeadZone = Mathf.Pow(Screen.height / moveInputDeadZone, 2);
+
+        interactButton = jumpButton.GetComponent<Button>();
+        interactButton.onClick.AddListener(OnJumpButtonPressed);
     }
 
     void Update()
@@ -71,11 +80,13 @@ public class touchCharacterControllerScript : MonoBehaviour
                         rightFingerId = t.fingerId;
                     }
                     break;
+
                 case TouchPhase.Ended:
                 case TouchPhase.Canceled:
                     if (t.fingerId == leftFingerId) leftFingerId = -1;
                     else if (t.fingerId == rightFingerId) rightFingerId = -1;
                     break;
+
                 case TouchPhase.Moved:
                     if (t.fingerId == rightFingerId)
                     {
@@ -86,6 +97,7 @@ public class touchCharacterControllerScript : MonoBehaviour
                         moveInput = t.position - moveTouchStartPosition;
                     }
                     break;
+
                 case TouchPhase.Stationary:
                     if (t.fingerId == rightFingerId) lookInput = Vector2.zero;
                     break;
@@ -99,6 +111,7 @@ public class touchCharacterControllerScript : MonoBehaviour
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0, 0);
         transform.Rotate(transform.up, lookInput.x);
     }
+
     void Move()
     {
         if (moveInput.sqrMagnitude <= moveInputDeadZone) return;
@@ -107,21 +120,26 @@ public class touchCharacterControllerScript : MonoBehaviour
         characterController.Move(transform.right * movementDirection.x + transform.forward * movementDirection.y);
     }
 
-
     void ApplyGravity()
     {
         if (characterController.isGrounded)
         {
             moveDirection.y = 0;
 
-            if (Input.GetButton("Jump"))
+            if (jumpButtonClicked)
             {
                 moveDirection.y = jumpSpeed;
+                jumpButtonClicked = false;
             }
         }
         else
         {
             moveDirection.y -= gravity * Time.deltaTime;
         }
+    }
+
+    void OnJumpButtonPressed()
+    {
+        jumpButtonClicked = true;
     }
 }

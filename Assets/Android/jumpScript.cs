@@ -1,9 +1,14 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class SendKeyE : MonoBehaviour
+public class jumpScript : MonoBehaviour
 {
+    //public float jumpSpeed = 8.0f;
+    //public float gravity = 20.0f;
+
     void Start()
     {
         Button button = GetComponent<Button>();
@@ -12,6 +17,6 @@ public class SendKeyE : MonoBehaviour
 
     void OnButtonClicked()
     {
-        Input.GetKeyDown(KeyCode.Space);
+        Input.GetKeyDown(KeyCode.E);
     }
 }
